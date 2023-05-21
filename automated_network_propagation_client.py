@@ -128,7 +128,7 @@ def write_set(file_path: str, set_prefix: str, data: dict[str, list[str]], key_p
     )
 
 
-def aiter_sse_retrying(client: AsyncClient):
+def aiter_sse_retrying(client: AsyncClient, url: str):
     last_event_id = ''
     reconnection_delay = 0.0
 
@@ -144,7 +144,7 @@ def aiter_sse_retrying(client: AsyncClient):
         if last_event_id:
             headers['Last-Event-ID'] = last_event_id
 
-        async with aconnect_sse(client=client, method='GET', url='http://localhost:8080/feed', headers=headers) as event_source:
+        async with aconnect_sse(client=client, method='GET', url=url, headers=headers) as event_source:
             async for sse in event_source.aiter_sse():
                 last_event_id = sse.id
 
@@ -173,7 +173,7 @@ async def handle(
 
     dynamic_denylist_config = config['dynamic_denylist']
 
-    async for sse in aiter_sse_retrying(client=http_client):
+    async for sse in aiter_sse_retrying(client=http_client, url=config['sse']['url']):
         match sse.event:
             case 'block':
                 try:
