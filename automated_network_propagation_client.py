@@ -109,7 +109,7 @@ async def write_dynamic_denylist_set(
                 set_name=f'{set_prefix}_IPV6'.upper(),
                 ip_address_ttl_value_pairs=ipv6_address_ttl_value_pairs
             )
-        ])
+        ]) + '\n'
     )
 
 
@@ -124,7 +124,7 @@ def write_set(file_path: str, set_prefix: str, data: dict[str, list[str]], key_p
                 set_name=f'{set_prefix}_IPV6'.upper(),
                 elements=data[f'{key_prefix}_ipv6']
             )
-        ])
+        ]) + '\n'
     )
 
 
