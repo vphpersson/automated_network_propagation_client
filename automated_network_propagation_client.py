@@ -71,8 +71,11 @@ async def write_dynamic_denylist_set(
 
     key: bytes
     async for key in redis_client.scan_iter(match=f'{redis_key_prefix}|*'):
+
+        key_ip_address: str = key.decode().removeprefix(f'{redis_key_prefix}|')
+
         try:
-            redis_key_ip_address: IPv4Address | IPv6Address = ip_address(address=key.removeprefix(f'{redis_key_prefix}|'))
+            redis_key_ip_address: IPv4Address | IPv6Address = ip_address(address=key_ip_address)
         except ValueError:
             LOG.exception(
                 msg='The Redis dynamic denylist key does not constitute an IP address',
@@ -94,7 +97,7 @@ async def write_dynamic_denylist_set(
 
         pair_ilst.append(
             (
-                key.decode().removeprefix(f'{redis_key_prefix}|'),
+                key_ip_address,
                 int(await redis_client.ttl(name=key))
             )
         )
