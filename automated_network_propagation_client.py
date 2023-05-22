@@ -69,7 +69,7 @@ async def write_dynamic_denylist_set(
     ipv4_address_ttl_value_pairs: list[tuple[str, int]] = []
     ipv6_address_ttl_value_pairs: list[tuple[str, int]] = []
 
-    key: str
+    key: bytes
     async for key in redis_client.scan_iter(match=f'{redis_key_prefix}|*'):
         try:
             redis_key_ip_address: IPv4Address | IPv6Address = ip_address(address=key.removeprefix(f'{redis_key_prefix}|'))
@@ -94,7 +94,7 @@ async def write_dynamic_denylist_set(
 
         pair_ilst.append(
             (
-                key.removeprefix(f'{redis_key_prefix}|'),
+                key.decode().removeprefix(f'{redis_key_prefix}|'),
                 int(await redis_client.ttl(name=key))
             )
         )
